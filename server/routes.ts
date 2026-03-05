@@ -9,7 +9,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   // Call seed on startup
-  await storage.seedDatabase();
+  // await storage.seedDatabase();
 
   app.get(api.employees.list.path, async (req, res) => {
     const data = await storage.getEmployees();
