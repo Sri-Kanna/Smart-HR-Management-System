@@ -2,19 +2,22 @@
 
 Follow these steps to get the project running on your local machine.
 
-## Prerequisites
-- **Node.js**: (v18 or higher recommended) [Download here](https://nodejs.org/)
-- **PostgreSQL**: A running PostgreSQL instance. [Download here](https://www.postgresql.org/download/)
-- **Git**: To clone the repository (if applicable).
+## Project Requirements
+These are the core components and libraries the project depends on:
+- **Runtime**: Node.js (v18+)
+- **Database**: PostgreSQL (v14+)
+- **Backend**: Express, Drizzle ORM, Zod, pg
+- **Frontend**: React, Tailwind CSS, Recharts, Lucide Icons, TanStack Query
 
 ## Step 1: Clone or Download
-Download the project files to a folder on your computer.
+Download the project files as a ZIP from Replit to a folder on your computer.
 
 ## Step 2: Install Dependencies
-Open your terminal/command prompt in the project folder and run:
+Open your terminal in the project folder and run:
 ```bash
 npm install
 ```
+*This command automatically downloads all the necessary libraries listed in the project's configuration.*
 
 ## Step 3: Configure Database
 1. Create a new database in your PostgreSQL instance (e.g., named `hr_system`).
