@@ -19,20 +19,29 @@ npm install
 ```
 *This command automatically downloads all the necessary libraries listed in the project's configuration.*
 
-## Step 3: Configure Database
-1. Create a new database in your PostgreSQL instance (e.g., named `hr_system`).
-2. Create a file named `.env` in the root of the project.
-3. Add your database connection string to the `.env` file:
-   ```env
-   DATABASE_URL=postgres://username:password@localhost:5432/hr_system
+## Step 3: Configure Database (Detailed)
+1. **Install PostgreSQL**: Ensure you have PostgreSQL installed and running on your local machine.
+2. **Create Database**: Open your PostgreSQL terminal (psql) or a GUI like pgAdmin and run:
+   ```sql
+   CREATE DATABASE hr_system;
    ```
-   *Replace `username`, `password`, and `hr_system` with your actual PostgreSQL credentials.*
+3. **Get Connection String**: Your connection string follows this format:
+   `postgres://[username]:[password]@localhost:5432/hr_system`
+   - Default username is usually `postgres`.
+   - Use the password you set during PostgreSQL installation.
+4. **Create .env File**: In the root folder of the project, create a new file named `.env`.
+5. **Add Database URL**: Open `.env` and paste your connection string:
+   ```env
+   DATABASE_URL=postgres://postgres:your_password_here@localhost:5432/hr_system
+   ```
 
-## Step 4: Initialize the Database
-Run the following command to create the tables:
-```bash
-npm run db:push
-```
+## Step 4: Initialize the Database (Detailed)
+1. **Sync Schema**: In your project terminal, run the following command. This creates all tables (Employees, Attendance, etc.) and relationships automatically:
+   ```bash
+   npm run db:push
+   ```
+2. **Verify Tables**: (Optional) You can check your database to see that tables like `employees`, `departments`, and `attendance` have been created.
+3. **Seed Data (Optional)**: If you want to start with the example data, go to `server/routes.ts`, uncomment the line `await storage.seedDatabase();`, and restart the server.
 
 ## Step 5: Start the Application
 Run the development server:
