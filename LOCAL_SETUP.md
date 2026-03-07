@@ -29,7 +29,7 @@ npm install
    `postgres://[username]:[password]@localhost:5432/hr_system`
    - Default username is usually `postgres`.
    - Use the password you set during PostgreSQL installation.
-4. **Create .env File**: In the root folder of the project, create a new file named `.env`.
+4. **Create .env File**: In the root folder of the project, create a new file named exactly `.env` (starts with a dot).
 5. **Add Database URL**: Open `.env` and paste your connection string:
    ```env
    DATABASE_URL=postgres://postgres:your_password_here@localhost:5432/hr_system
