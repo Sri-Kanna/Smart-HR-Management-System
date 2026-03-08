@@ -55,13 +55,15 @@ npm run dev
 
 **On Windows (PowerShell):**
 ```powershell
-$env:NODE_ENV='development'; tsx server/index.ts
+$env:NODE_ENV='development'; npx tsx server/index.ts
 ```
 
 **On Windows (Command Prompt):**
 ```cmd
-set NODE_ENV=development && tsx server/index.ts
+set NODE_ENV=development && npx tsx server/index.ts
 ```
+
+The `npx` command tells Windows to find and run the `tsx` package from your project's local `node_modules` folder.
 
 The app should now be running! Open your browser and go to `http://localhost:5000`.
 
