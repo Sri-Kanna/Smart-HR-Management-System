@@ -47,9 +47,22 @@ npm install
 
 ## Step 5: Start the Application
 Run the development server:
+
+**On Mac/Linux:**
 ```bash
 npm run dev
 ```
+
+**On Windows (PowerShell):**
+```powershell
+$env:NODE_ENV='development'; tsx server/index.ts
+```
+
+**On Windows (Command Prompt):**
+```cmd
+set NODE_ENV=development && tsx server/index.ts
+```
+
 The app should now be running! Open your browser and go to `http://localhost:5000`.
 
 ## Scripts Summary
