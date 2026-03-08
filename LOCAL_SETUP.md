@@ -29,12 +29,37 @@ npm install
    `postgres://[username]:[password]@localhost:5432/hr_system`
    - Default username is usually `postgres`.
    - Use the password you set during PostgreSQL installation.
-4. **Create .env File**: In the root folder of the project (the main folder containing `package.json` and `server/`), create a new file named exactly `.env`.
-   - **Where**: It should be in the same place as `package.json`.
-   - **Name**: `.env` (starts with a dot, no other name or extension).
-5. **Add Database URL**: Open `.env` and paste your connection string:
-   ```env
+
+4. **Create .env File - CRITICAL STEP**:
+   - Open your file explorer/finder and navigate to your project root (where `package.json` is located).
+   - Right-click in the empty space and select "New" → "Text Document" (or equivalent).
+   - Name it **exactly** `.env` (with the dot at the start, no extension).
+   - If your system shows the file as `.env.txt`, rename it to just `.env`.
+
+5. **Add Database URL to .env**:
+   - Right-click the `.env` file and open it with Notepad or any text editor.
+   - Copy and paste this line (replace with your actual credentials):
+   ```
    DATABASE_URL=postgres://postgres:your_password_here@localhost:5432/hr_system
+   ```
+   - **Example**: If your PostgreSQL password is `MyPassword123`, it should look like:
+   ```
+   DATABASE_URL=postgres://postgres:MyPassword123@localhost:5432/hr_system
+   ```
+   - Save the file (Ctrl+S or Cmd+S).
+   - Close the file.
+
+6. **Verify .env File**:
+   - Make sure the `.env` file is in the exact same folder as `package.json`.
+   - The file name should be `.env` (not `.env.txt` or `env` or anything else).
+   - Your folder structure should look like:
+   ```
+   HR-Smart-System/
+   ├── package.json
+   ├── .env          ← Your file should be here
+   ├── server/
+   ├── client/
+   └── ... other files
    ```
 
 ## Step 4: Initialize the Database (Detailed)
