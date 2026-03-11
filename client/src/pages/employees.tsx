@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEmployees, useDeleteEmployee } from "@/hooks/use-employees";
 import { EmployeeDialog } from "@/components/employee-dialog";
+import { exportEmployeesPDF } from "@/lib/pdf-export";
 import { 
   Plus, 
   MoreHorizontal, 
@@ -9,7 +10,8 @@ import {
   Search,
   Mail,
   Briefcase,
-  Users
+  Users,
+  Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
 
 export default function Employees() {
   const { data: employees, isLoading } = useEmployees();
@@ -40,7 +41,6 @@ export default function Employees() {
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<any | null>(null);
-  
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null);
 
@@ -51,21 +51,9 @@ export default function Employees() {
     emp.departmentName?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const handleAddClick = () => {
-    setEditingEmployee(null);
-    setDialogOpen(true);
-  };
-
-  const handleEditClick = (employee: any) => {
-    setEditingEmployee(employee);
-    setDialogOpen(true);
-  };
-
-  const handleDeleteClick = (id: number) => {
-    setEmployeeToDelete(id);
-    setDeleteConfirmOpen(true);
-  };
-
+  const handleAddClick = () => { setEditingEmployee(null); setDialogOpen(true); };
+  const handleEditClick = (employee: any) => { setEditingEmployee(employee); setDialogOpen(true); };
+  const handleDeleteClick = (id: number) => { setEmployeeToDelete(id); setDeleteConfirmOpen(true); };
   const confirmDelete = () => {
     if (employeeToDelete !== null) {
       deleteMutation.mutate(employeeToDelete);
@@ -81,26 +69,39 @@ export default function Employees() {
           <h1 className="text-3xl font-display font-bold text-foreground">Team Directory</h1>
           <p className="text-muted-foreground mt-1">Manage employees, roles, and departments.</p>
         </div>
-        <Button 
-          onClick={handleAddClick} 
-          className="rounded-xl h-11 px-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add Employee
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() => exportEmployeesPDF(filteredEmployees)}
+            disabled={filteredEmployees.length === 0}
+            className="rounded-xl h-11 px-5 gap-2"
+            data-testid="button-export-pdf"
+          >
+            <Download className="w-4 h-4" />
+            Export PDF
+          </Button>
+          <Button 
+            onClick={handleAddClick}
+            className="rounded-xl h-11 px-6 shadow-lg shadow-primary/25"
+            data-testid="button-add-employee"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Add Employee
+          </Button>
+        </div>
       </div>
 
       <div className="bg-card rounded-2xl border border-border/60 shadow-sm flex-1 flex flex-col overflow-hidden">
         
-        {/* Toolbar */}
         <div className="p-4 border-b border-border/60 bg-secondary/30 flex flex-col sm:flex-row items-center gap-4">
           <div className="relative w-full sm:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
-              placeholder="Search employees by name, email, or role..." 
+              placeholder="Search by name, email, role or department..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-11 rounded-xl bg-background border-border/50 focus-visible:ring-primary/20"
+              data-testid="input-search-employees"
             />
           </div>
           <div className="text-sm text-muted-foreground font-medium ml-auto">
@@ -108,7 +109,6 @@ export default function Employees() {
           </div>
         </div>
 
-        {/* Table List */}
         <div className="flex-1 overflow-auto">
           {isLoading ? (
             <div className="p-6 space-y-4">
@@ -126,28 +126,22 @@ export default function Employees() {
             <div className="grid grid-cols-1 gap-0">
               {filteredEmployees.map((emp, index) => (
                 <div 
-                  key={emp.id} 
-                  className={`
-                    flex flex-col md:flex-row md:items-center justify-between p-5 gap-4
-                    ${index !== filteredEmployees.length - 1 ? 'border-b border-border/40' : ''}
-                    hover:bg-secondary/50 transition-colors duration-200
-                  `}
+                  key={emp.id}
+                  data-testid={`row-employee-${emp.id}`}
+                  className={`flex flex-col md:flex-row md:items-center justify-between p-5 gap-4 ${index !== filteredEmployees.length - 1 ? 'border-b border-border/40' : ''} hover:bg-secondary/50 transition-colors duration-200`}
                 >
-                  
-                  {/* Basic Info */}
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-display font-bold text-lg shadow-sm">
                       {emp.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-foreground">{emp.name}</h3>
+                      <h3 className="text-base font-semibold text-foreground" data-testid={`text-employee-name-${emp.id}`}>{emp.name}</h3>
                       <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {emp.email}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Role & Dept */}
                   <div className="flex-1">
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -160,11 +154,10 @@ export default function Employees() {
                     </div>
                   </div>
 
-                  {/* Skills (Hidden on small) */}
                   <div className="hidden lg:flex flex-1 flex-wrap gap-1.5">
                     {emp.skills && emp.skills.length > 0 ? (
                       emp.skills.slice(0, 3).map((skill, i) => (
-                        <Badge key={i} variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary">
+                        <Badge key={i} variant="secondary" className="bg-secondary text-secondary-foreground">
                           {skill}
                         </Badge>
                       ))
@@ -178,11 +171,10 @@ export default function Employees() {
                     )}
                   </div>
 
-                  {/* Actions */}
                   <div className="flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                        <Button variant="ghost" size="icon" className="rounded-lg" data-testid={`button-actions-${emp.id}`}>
                           <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -217,8 +209,7 @@ export default function Employees() {
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-xl">Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription className="text-base text-muted-foreground mt-2">
-              This action cannot be undone. This will permanently delete the employee
-              from the system and remove their data from the servers.
+              This action cannot be undone. This will permanently delete the employee from the system.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 gap-3">
@@ -226,13 +217,13 @@ export default function Employees() {
             <AlertDialogAction 
               onClick={confirmDelete}
               className="rounded-xl h-11 px-6 bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg shadow-destructive/20"
+              data-testid="button-confirm-delete"
             >
               {deleteMutation.isPending ? "Deleting..." : "Delete Employee"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </div>
   );
 }

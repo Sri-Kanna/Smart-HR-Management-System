@@ -22,6 +22,8 @@ export interface IStorage {
   
   getAnalyticsReport(): Promise<AnalyticsReport[]>;
   
+  getPerformances(): Promise<typeof performance.$inferSelect[]>;
+  createPerformance(input: { empId: number; score: number; reviewDate: string; topic: string }): Promise<typeof performance.$inferSelect>;
   getDepartments(): Promise<typeof departments.$inferSelect[]>;
   getJobRoles(): Promise<typeof jobRoles.$inferSelect[]>;
   
@@ -123,6 +125,15 @@ export class DatabaseStorage implements IStorage {
       averagePerformanceScore: String(r.averagePerformanceScore || '0'),
       totalPresentCount: Number(r.totalPresentCount || 0)
     }));
+  }
+
+  async getPerformances() {
+    return await db.select().from(performance);
+  }
+
+  async createPerformance(input: { empId: number; score: number; reviewDate: string; topic: string }) {
+    const [created] = await db.insert(performance).values(input).returning();
+    return created;
   }
 
   async getDepartments() {

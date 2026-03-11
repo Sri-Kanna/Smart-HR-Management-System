@@ -36,6 +36,7 @@ export function useLogAttendance() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.attendance.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.analytics.report.path] });
       toast({ title: "Success", description: "Attendance logged successfully." });
     },
     onError: (error) => {

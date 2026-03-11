@@ -92,6 +92,29 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/performance", async (req, res) => {
+    const data = await storage.getPerformances();
+    res.json(data);
+  });
+
+  app.post("/api/performance", async (req, res) => {
+    try {
+      const input = {
+        empId: z.coerce.number().parse(req.body.empId),
+        score: z.coerce.number().min(1).max(10).parse(req.body.score),
+        reviewDate: z.string().min(1).parse(req.body.reviewDate),
+        topic: z.string().min(1).parse(req.body.topic),
+      };
+      const data = await storage.createPerformance(input);
+      res.status(201).json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
   app.get(api.analytics.report.path, async (req, res) => {
     const data = await storage.getAnalyticsReport();
     res.json(data);

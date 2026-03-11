@@ -3,8 +3,8 @@ import {
   Users, 
   LayoutDashboard, 
   CalendarCheck, 
-  Settings,
-  Building2
+  Building2,
+  TrendingUp
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,6 +22,7 @@ const navItems = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
   { title: "Employees", href: "/employees", icon: Users },
   { title: "Attendance", href: "/attendance", icon: CalendarCheck },
+  { title: "Performance", href: "/performance", icon: TrendingUp },
 ];
 
 export function AppSidebar() {
@@ -55,13 +56,8 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild tooltip={item.title}>
                       <Link 
                         href={item.href}
-                        className={`
-                          flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                          ${isActive 
-                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                          }
-                        `}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${isActive ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+                        data-testid={`link-nav-${item.title.toLowerCase()}`}
                       >
                         <item.icon className="w-5 h-5" />
                         <span className="font-medium">{item.title}</span>
