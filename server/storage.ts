@@ -1,7 +1,7 @@
 import { db, pool } from "./db";
 import { 
-  employees, attendance, departments, jobRoles, performance,
-  type InsertEmployee, type UpdateEmployeeRequest, type InsertAttendance,
+  employees, attendance, departments, jobRoles, performance, companyEvents,
+  type InsertEmployee, type UpdateEmployeeRequest, type InsertAttendance, type InsertCompanyEvent,
 } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import { AnalyticsReportSchema, EmployeeWithDetailsSchema } from "@shared/routes";
@@ -24,6 +24,9 @@ export interface IStorage {
   
   getPerformances(): Promise<typeof performance.$inferSelect[]>;
   createPerformance(input: { empId: number; score: number; reviewDate: string; topic: string }): Promise<typeof performance.$inferSelect>;
+  getCompanyEvents(): Promise<typeof companyEvents.$inferSelect[]>;
+  createCompanyEvent(input: InsertCompanyEvent): Promise<typeof companyEvents.$inferSelect>;
+  deleteCompanyEvent(id: number): Promise<void>;
   getDepartments(): Promise<typeof departments.$inferSelect[]>;
   getJobRoles(): Promise<typeof jobRoles.$inferSelect[]>;
   
@@ -134,6 +137,19 @@ export class DatabaseStorage implements IStorage {
   async createPerformance(input: { empId: number; score: number; reviewDate: string; topic: string }) {
     const [created] = await db.insert(performance).values(input).returning();
     return created;
+  }
+
+  async getCompanyEvents() {
+    return await db.select().from(companyEvents).orderBy(companyEvents.eventDate);
+  }
+
+  async createCompanyEvent(input: InsertCompanyEvent) {
+    const [created] = await db.insert(companyEvents).values(input).returning();
+    return created;
+  }
+
+  async deleteCompanyEvent(id: number) {
+    await db.delete(companyEvents).where(eq(companyEvents.id, id));
   }
 
   async getDepartments() {

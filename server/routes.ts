@@ -92,6 +92,35 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/events", async (req, res) => {
+    const data = await storage.getCompanyEvents();
+    res.json(data);
+  });
+
+  app.post("/api/events", async (req, res) => {
+    try {
+      const input = {
+        title: z.string().min(1).parse(req.body.title),
+        eventDate: z.string().min(1).parse(req.body.eventDate),
+        location: z.string().optional().parse(req.body.location),
+        description: z.string().optional().parse(req.body.description),
+        category: z.string().min(1).parse(req.body.category),
+      };
+      const data = await storage.createCompanyEvent(input);
+      res.status(201).json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
+  app.delete("/api/events/:id", async (req, res) => {
+    await storage.deleteCompanyEvent(Number(req.params.id));
+    res.status(204).send();
+  });
+
   app.get("/api/performance", async (req, res) => {
     const data = await storage.getPerformances();
     res.json(data);

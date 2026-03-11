@@ -1,14 +1,23 @@
 import { useAnalytics } from "@/hooks/use-analytics";
 import { useEmployees } from "@/hooks/use-employees";
 import { exportAnalyticsPDF } from "@/lib/pdf-export";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import type { CompanyEvent } from "@shared/schema";
 import { 
   Users, 
   TrendingUp, 
   CalendarCheck, 
   Building2,
   Download,
-  Cake,
-  Percent
+  CalendarDays,
+  MapPin,
+  Plus,
+  Trash2,
+  Percent,
+  Tag
 } from "lucide-react";
 import {
   BarChart,
@@ -22,34 +31,160 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { format, differenceInDays, parseISO, setYear } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { format, differenceInDays, parseISO, isAfter, startOfToday } from "date-fns";
 
-function getUpcomingBirthdays(employees: any[], days = 30) {
-  const today = new Date();
-  return employees
-    .map((emp) => {
-      if (!emp.dob) return null;
-      const dob = parseISO(emp.dob);
-      let nextBirthday = setYear(dob, today.getFullYear());
-      if (nextBirthday < today) nextBirthday = setYear(dob, today.getFullYear() + 1);
-      const daysUntil = differenceInDays(nextBirthday, today);
-      return daysUntil <= days ? { ...emp, daysUntil, nextBirthday } : null;
-    })
-    .filter(Boolean)
-    .sort((a: any, b: any) => a.daysUntil - b.daysUntil);
+const EVENT_CATEGORIES = ["Conference", "Training", "Team Building", "Workshop", "Meeting", "General"];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Conference:    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  Training:      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  "Team Building": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  Workshop:      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Meeting:       "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  General:       "bg-secondary text-muted-foreground",
+};
+
+function daysLabel(eventDate: string) {
+  const today = startOfToday();
+  const d = parseISO(eventDate);
+  const diff = differenceInDays(d, today);
+  if (diff === 0) return { label: "Today!", urgent: true };
+  if (diff === 1) return { label: "Tomorrow", urgent: true };
+  if (diff < 0) return { label: "Past", urgent: false };
+  return { label: `In ${diff}d`, urgent: false };
+}
+
+function AddEventDialog({ onClose }: { onClose: () => void }) {
+  const { toast } = useToast();
+  const [form, setForm] = useState({
+    title: "",
+    eventDate: "",
+    location: "",
+    description: "",
+    category: "General",
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: typeof form) => apiRequest("POST", "/api/events", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({ title: "Event added successfully" });
+      onClose();
+    },
+    onError: () => toast({ title: "Failed to add event", variant: "destructive" }),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.eventDate || !form.category) return;
+    mutation.mutate(form);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+      <div className="space-y-1.5">
+        <Label htmlFor="event-title">Title *</Label>
+        <Input
+          id="event-title"
+          data-testid="input-event-title"
+          placeholder="e.g. Annual Tech Conference"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="event-date">Date *</Label>
+          <Input
+            id="event-date"
+            data-testid="input-event-date"
+            type="date"
+            value={form.eventDate}
+            onChange={(e) => setForm({ ...form, eventDate: e.target.value })}
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="event-category">Category *</Label>
+          <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+            <SelectTrigger id="event-category" data-testid="select-event-category">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {EVENT_CATEGORIES.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="event-location">Location</Label>
+        <Input
+          id="event-location"
+          data-testid="input-event-location"
+          placeholder="e.g. Main Conference Hall"
+          value={form.location}
+          onChange={(e) => setForm({ ...form, location: e.target.value })}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="event-description">Description</Label>
+        <Textarea
+          id="event-description"
+          data-testid="input-event-description"
+          placeholder="Brief description..."
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          rows={3}
+        />
+      </div>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={mutation.isPending}
+        data-testid="button-submit-event"
+      >
+        {mutation.isPending ? "Adding..." : "Add Event"}
+      </Button>
+    </form>
+  );
 }
 
 export default function Dashboard() {
   const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
   const { data: employees, isLoading: employeesLoading } = useEmployees();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const { data: events = [], isLoading: eventsLoading } = useQuery<CompanyEvent[]>({
+    queryKey: ["/api/events"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/events/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      toast({ title: "Event removed" });
+    },
+  });
+
+  const today = startOfToday();
+  const upcomingEvents = events
+    .filter((e) => !isAfter(today, parseISO(e.eventDate)))
+    .sort((a, b) => a.eventDate.localeCompare(b.eventDate));
 
   const totalEmployees = employees?.length || 0;
   const avgPerformanceOverall = analytics && analytics.length > 0
     ? (analytics.reduce((acc, curr) => acc + parseFloat(curr.averagePerformanceScore || "0"), 0) / analytics.length).toFixed(1)
     : "0.0";
   const totalPresent = analytics?.reduce((sum, item) => sum + item.totalPresentCount, 0) || 0;
-
-  const upcomingBirthdays = employees ? getUpcomingBirthdays(employees) : [];
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -81,7 +216,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             {employeesLoading ? <Skeleton className="h-8 w-16" /> : (
-              <div className="text-3xl font-display font-bold text-foreground">{totalEmployees}</div>
+              <div className="text-3xl font-display font-bold text-foreground" data-testid="kpi-total-employees">{totalEmployees}</div>
             )}
           </CardContent>
         </Card>
@@ -94,7 +229,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             {analyticsLoading ? <Skeleton className="h-8 w-16" /> : (
-              <div className="text-3xl font-display font-bold text-foreground">{avgPerformanceOverall} <span className="text-sm font-normal text-muted-foreground">/ 10</span></div>
+              <div className="text-3xl font-display font-bold text-foreground" data-testid="kpi-avg-performance">{avgPerformanceOverall} <span className="text-sm font-normal text-muted-foreground">/ 10</span></div>
             )}
           </CardContent>
         </Card>
@@ -107,7 +242,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             {analyticsLoading ? <Skeleton className="h-8 w-16" /> : (
-              <div className="text-3xl font-display font-bold text-foreground">{analytics?.length || 0}</div>
+              <div className="text-3xl font-display font-bold text-foreground" data-testid="kpi-departments">{analytics?.length || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -115,18 +250,18 @@ export default function Dashboard() {
         <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-chart-4/5 rounded-bl-[100px] -z-10" />
           <CardHeader className="flex flex-row items-center justify-between gap-1 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Present</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Upcoming Events</CardTitle>
             <div className="p-2 bg-chart-4/10 text-chart-4 rounded-lg"><CalendarCheck className="w-5 h-5" /></div>
           </CardHeader>
           <CardContent>
-            {analyticsLoading ? <Skeleton className="h-8 w-16" /> : (
-              <div className="text-3xl font-display font-bold text-foreground">{totalPresent}</div>
+            {eventsLoading ? <Skeleton className="h-8 w-16" /> : (
+              <div className="text-3xl font-display font-bold text-foreground" data-testid="kpi-upcoming-events">{upcomingEvents.length}</div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts + Birthday */}
+      {/* Charts + Events */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         <Card className="rounded-2xl border-border/50 shadow-sm lg:col-span-2">
@@ -155,38 +290,83 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Upcoming Birthdays Widget */}
-        <Card className="rounded-2xl border-border/50 shadow-sm">
-          <CardHeader className="border-b border-border/50 pb-4">
+        {/* Company Events Widget */}
+        <Card className="rounded-2xl border-border/50 shadow-sm flex flex-col">
+          <CardHeader className="border-b border-border/50 pb-4 flex flex-row items-center justify-between gap-2">
             <CardTitle className="font-display flex items-center gap-2">
-              <Cake className="w-5 h-5 text-pink-500" />
-              Upcoming Birthdays
+              <CalendarDays className="w-5 h-5 text-primary" />
+              Upcoming Events
             </CardTitle>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 gap-1 rounded-lg" data-testid="button-add-event">
+                  <Plus className="w-3.5 h-3.5" />
+                  Add
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Company Event</DialogTitle>
+                </DialogHeader>
+                <AddEventDialog onClose={() => setDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </CardHeader>
-          <CardContent className="p-0">
-            {employeesLoading ? (
-              <div className="p-4 space-y-3">{[...Array(3)].map((_, i) => <Skeleton key={i} className="w-full h-12 rounded-xl" />)}</div>
-            ) : upcomingBirthdays.length === 0 ? (
-              <div className="p-6 text-center text-muted-foreground text-sm">
-                <Cake className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                No birthdays in the next 30 days.
+          <CardContent className="p-0 flex-1 overflow-hidden">
+            {eventsLoading ? (
+              <div className="p-4 space-y-3">{[...Array(3)].map((_, i) => <Skeleton key={i} className="w-full h-14 rounded-xl" />)}</div>
+            ) : upcomingEvents.length === 0 ? (
+              <div className="p-6 text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
+                <CalendarDays className="w-8 h-8 opacity-30" />
+                <span>No upcoming events.<br />Click <strong>Add</strong> to schedule one.</span>
               </div>
             ) : (
-              <div className="divide-y divide-border/50">
-                {(upcomingBirthdays as any[]).map((emp) => (
-                  <div key={emp.id} className="flex items-center gap-3 p-4 hover:bg-secondary/30 transition-colors">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                      {emp.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+              <div className="divide-y divide-border/50 max-h-[320px] overflow-y-auto">
+                {upcomingEvents.map((event) => {
+                  const { label, urgent } = daysLabel(event.eventDate);
+                  return (
+                    <div
+                      key={event.id}
+                      data-testid={`event-item-${event.id}`}
+                      className="flex items-start gap-3 p-4 hover:bg-secondary/30 transition-colors group"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                        <CalendarDays className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm text-foreground truncate" data-testid={`event-title-${event.id}`}>{event.title}</div>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span className="text-xs text-muted-foreground">
+                            {format(parseISO(event.eventDate), "MMM d, yyyy")}
+                          </span>
+                          {event.location && (
+                            <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                              <MapPin className="w-3 h-3" />
+                              {event.location}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${CATEGORY_COLORS[event.category] || CATEGORY_COLORS.General}`}>
+                            <Tag className="w-2.5 h-2.5" />
+                            {event.category}
+                          </span>
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${urgent ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                            {label}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteMutation.mutate(event.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-destructive/10 hover:text-destructive text-muted-foreground shrink-0"
+                        data-testid={`button-delete-event-${event.id}`}
+                        title="Remove event"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm text-foreground truncate">{emp.name}</div>
-                      <div className="text-xs text-muted-foreground">{format(emp.nextBirthday, "MMM d")}</div>
-                    </div>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${emp.daysUntil === 0 ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400' : 'bg-secondary text-muted-foreground'}`}>
-                      {emp.daysUntil === 0 ? "Today!" : `${emp.daysUntil}d`}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
