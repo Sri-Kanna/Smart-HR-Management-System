@@ -154,8 +154,102 @@ export async function registerRoutes(
     res.json(data);
   });
 
+  app.post("/api/departments", async (req, res) => {
+    try {
+      const name = z.string().min(1).parse(req.body.name);
+      const data = await storage.createDepartment(name);
+      res.status(201).json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      throw err;
+    }
+  });
+
+  app.delete("/api/departments/:id", async (req, res) => {
+    await storage.deleteDepartment(Number(req.params.id));
+    res.status(204).send();
+  });
+
   app.get(api.jobRoles.list.path, async (req, res) => {
     const data = await storage.getJobRoles();
+    res.json(data);
+  });
+
+  app.post("/api/job-roles", async (req, res) => {
+    try {
+      const input = {
+        title: z.string().min(1).parse(req.body.title),
+        baseSalary: z.string().min(1).parse(req.body.baseSalary),
+        deptId: z.coerce.number().parse(req.body.deptId),
+      };
+      const data = await storage.createJobRole(input);
+      res.status(201).json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      throw err;
+    }
+  });
+
+  app.put("/api/job-roles/:id", async (req, res) => {
+    try {
+      const input: { title?: string; baseSalary?: string; deptId?: number } = {};
+      if (req.body.title) input.title = z.string().min(1).parse(req.body.title);
+      if (req.body.baseSalary) input.baseSalary = z.string().min(1).parse(req.body.baseSalary);
+      if (req.body.deptId) input.deptId = z.coerce.number().parse(req.body.deptId);
+      const data = await storage.updateJobRole(Number(req.params.id), input);
+      res.json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      throw err;
+    }
+  });
+
+  app.delete("/api/job-roles/:id", async (req, res) => {
+    await storage.deleteJobRole(Number(req.params.id));
+    res.status(204).send();
+  });
+
+  app.get("/api/leaves", async (req, res) => {
+    const data = await storage.getLeaves();
+    res.json(data);
+  });
+
+  app.post("/api/leaves", async (req, res) => {
+    try {
+      const input = {
+        empId: z.coerce.number().parse(req.body.empId),
+        leaveType: z.string().min(1).parse(req.body.leaveType),
+        startDate: z.string().min(1).parse(req.body.startDate),
+        endDate: z.string().min(1).parse(req.body.endDate),
+        reason: z.string().optional().parse(req.body.reason),
+        status: "Pending" as const,
+      };
+      const data = await storage.createLeave(input);
+      res.status(201).json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      throw err;
+    }
+  });
+
+  app.put("/api/leaves/:id/status", async (req, res) => {
+    try {
+      const status = z.enum(["Pending", "Approved", "Rejected"]).parse(req.body.status);
+      const data = await storage.updateLeaveStatus(Number(req.params.id), status);
+      res.json(data);
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message });
+      throw err;
+    }
+  });
+
+  app.delete("/api/leaves/:id", async (req, res) => {
+    await storage.deleteLeave(Number(req.params.id));
+    res.status(204).send();
+  });
+
+  app.get("/api/payroll-summary", async (req, res) => {
+    const data = await storage.getPayrollSummary();
     res.json(data);
   });
 

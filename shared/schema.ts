@@ -39,6 +39,16 @@ export const performance = pgTable("performance", {
   topic: varchar("topic", { length: 255 }).notNull(),
 });
 
+export const leaves = pgTable("leaves", {
+  id: serial("id").primaryKey(),
+  empId: integer("emp_id").references(() => employees.id).notNull(),
+  leaveType: varchar("leave_type", { length: 50 }).notNull(),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  reason: text("reason"),
+  status: varchar("status", { length: 20 }).notNull().default("Pending"),
+});
+
 export const companyEvents = pgTable("company_events", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -79,6 +89,7 @@ export const employeesRelations = relations(employees, ({ one, many }) => ({
 }));
 
 // Schemas
+export const insertLeaveSchema = createInsertSchema(leaves).omit({ id: true });
 export const insertCompanyEventSchema = createInsertSchema(companyEvents).omit({ id: true });
 export const insertDepartmentSchema = createInsertSchema(departments);
 export const insertJobRoleSchema = createInsertSchema(jobRoles);
@@ -102,6 +113,9 @@ export type InsertAttendance = z.infer<typeof insertAttendanceSchema>;
 
 export type Performance = typeof performance.$inferSelect;
 export type InsertPerformance = z.infer<typeof insertPerformanceSchema>;
+
+export type Leave = typeof leaves.$inferSelect;
+export type InsertLeave = z.infer<typeof insertLeaveSchema>;
 
 export type CompanyEvent = typeof companyEvents.$inferSelect;
 export type InsertCompanyEvent = z.infer<typeof insertCompanyEventSchema>;

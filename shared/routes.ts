@@ -28,6 +28,7 @@ export const EmployeeWithDetailsSchema = z.object({
   skills: z.array(z.string()).nullable(),
   roleTitle: z.string().optional(),
   departmentName: z.string().optional(),
+  baseSalary: z.string().optional(),
 });
 
 export const AnalyticsReportSchema = z.object({

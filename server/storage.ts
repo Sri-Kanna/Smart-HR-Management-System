@@ -1,7 +1,7 @@
 import { db, pool } from "./db";
 import { 
-  employees, attendance, departments, jobRoles, performance, companyEvents,
-  type InsertEmployee, type UpdateEmployeeRequest, type InsertAttendance, type InsertCompanyEvent,
+  employees, attendance, departments, jobRoles, performance, companyEvents, leaves,
+  type InsertEmployee, type UpdateEmployeeRequest, type InsertAttendance, type InsertCompanyEvent, type InsertLeave,
 } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import { AnalyticsReportSchema, EmployeeWithDetailsSchema } from "@shared/routes";
@@ -28,8 +28,18 @@ export interface IStorage {
   createCompanyEvent(input: InsertCompanyEvent): Promise<typeof companyEvents.$inferSelect>;
   deleteCompanyEvent(id: number): Promise<void>;
   getDepartments(): Promise<typeof departments.$inferSelect[]>;
+  createDepartment(name: string): Promise<typeof departments.$inferSelect>;
+  deleteDepartment(id: number): Promise<void>;
   getJobRoles(): Promise<typeof jobRoles.$inferSelect[]>;
-  
+  createJobRole(input: { title: string; baseSalary: string; deptId: number }): Promise<typeof jobRoles.$inferSelect>;
+  updateJobRole(id: number, input: { title?: string; baseSalary?: string; deptId?: number }): Promise<typeof jobRoles.$inferSelect>;
+  deleteJobRole(id: number): Promise<void>;
+  getLeaves(): Promise<(typeof leaves.$inferSelect & { employeeName: string })[]>;
+  createLeave(input: InsertLeave): Promise<typeof leaves.$inferSelect>;
+  updateLeaveStatus(id: number, status: string): Promise<typeof leaves.$inferSelect>;
+  deleteLeave(id: number): Promise<void>;
+  getPayrollSummary(): Promise<{ departmentName: string; headcount: number; totalMonthlyPayroll: number }[]>;
+
   seedDatabase(): Promise<void>;
 }
 
@@ -44,7 +54,8 @@ export class DatabaseStorage implements IStorage {
         roleId: employees.roleId,
         skills: employees.skills,
         roleTitle: jobRoles.title,
-        departmentName: departments.name
+        departmentName: departments.name,
+        baseSalary: jobRoles.baseSalary
       })
       .from(employees)
       .leftJoin(jobRoles, eq(employees.roleId, jobRoles.id))
@@ -67,7 +78,8 @@ export class DatabaseStorage implements IStorage {
         roleId: employees.roleId,
         skills: employees.skills,
         roleTitle: jobRoles.title,
-        departmentName: departments.name
+        departmentName: departments.name,
+        baseSalary: jobRoles.baseSalary
       })
       .from(employees)
       .leftJoin(jobRoles, eq(employees.roleId, jobRoles.id))
@@ -156,8 +168,81 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(departments);
   }
 
+  async createDepartment(name: string) {
+    const [created] = await db.insert(departments).values({ name }).returning();
+    return created;
+  }
+
+  async deleteDepartment(id: number) {
+    await db.delete(departments).where(eq(departments.id, id));
+  }
+
   async getJobRoles() {
     return await db.select().from(jobRoles);
+  }
+
+  async createJobRole(input: { title: string; baseSalary: string; deptId: number }) {
+    const [created] = await db.insert(jobRoles).values(input).returning();
+    return created;
+  }
+
+  async updateJobRole(id: number, input: { title?: string; baseSalary?: string; deptId?: number }) {
+    const [updated] = await db.update(jobRoles).set(input).where(eq(jobRoles.id, id)).returning();
+    return updated;
+  }
+
+  async deleteJobRole(id: number) {
+    await db.delete(jobRoles).where(eq(jobRoles.id, id));
+  }
+
+  async getLeaves() {
+    const result = await db
+      .select({
+        id: leaves.id,
+        empId: leaves.empId,
+        leaveType: leaves.leaveType,
+        startDate: leaves.startDate,
+        endDate: leaves.endDate,
+        reason: leaves.reason,
+        status: leaves.status,
+        employeeName: employees.name,
+      })
+      .from(leaves)
+      .leftJoin(employees, eq(leaves.empId, employees.id))
+      .orderBy(leaves.startDate);
+    return result.map(r => ({ ...r, employeeName: r.employeeName ?? 'Unknown' }));
+  }
+
+  async createLeave(input: InsertLeave) {
+    const [created] = await db.insert(leaves).values(input).returning();
+    return created;
+  }
+
+  async updateLeaveStatus(id: number, status: string) {
+    const [updated] = await db.update(leaves).set({ status }).where(eq(leaves.id, id)).returning();
+    return updated;
+  }
+
+  async deleteLeave(id: number) {
+    await db.delete(leaves).where(eq(leaves.id, id));
+  }
+
+  async getPayrollSummary() {
+    const { rows } = await db.execute(sql`
+      SELECT d.name AS "departmentName",
+             COUNT(e.id)::int AS headcount,
+             COALESCE(SUM(jr.base_salary::numeric), 0)::float AS "totalMonthlyPayroll"
+      FROM departments d
+      LEFT JOIN job_roles jr ON jr.dept_id = d.id
+      LEFT JOIN employees e ON e.role_id = jr.id
+      GROUP BY d.id, d.name
+      ORDER BY d.name
+    `);
+    return (rows as any[]).map(r => ({
+      departmentName: r.departmentName,
+      headcount: Number(r.headcount),
+      totalMonthlyPayroll: Number(r.totalMonthlyPayroll),
+    }));
   }
 
   async seedDatabase() {
