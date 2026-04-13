@@ -7,7 +7,9 @@ import {
   TrendingUp,
   CalendarOff,
   Briefcase,
-  DollarSign
+  DollarSign,
+  LogOut,
+  UserCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -20,7 +22,10 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarSeparator,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const mainNav = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -73,7 +78,23 @@ function NavGroup({ label, items }: { label: string; items: typeof mainNav }) {
   );
 }
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  user: { id: number; username: string; role: string };
+}
+
+export function AppSidebar({ user }: AppSidebarProps) {
+  const { toast } = useToast();
+
+  async function handleLogout() {
+    try {
+      await apiRequest("POST", "/api/auth/logout");
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      queryClient.setQueryData(["/api/auth/me"], null);
+    } catch {
+      toast({ title: "Error", description: "Failed to log out", variant: "destructive" });
+    }
+  }
+
   return (
     <Sidebar className="border-r border-border/50">
       <SidebarHeader className="p-6 pb-4">
@@ -97,6 +118,26 @@ export function AppSidebar() {
         <SidebarSeparator className="my-1" />
         <NavGroup label="Configuration" items={settingsNav} />
       </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-border/50">
+        <div className="flex items-center gap-3 px-2 py-2 mb-2">
+          <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
+            <UserCircle className="w-5 h-5" />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-sm font-semibold truncate" data-testid="text-username">{user.username}</span>
+            <span className="text-xs text-muted-foreground capitalize">{user.role}</span>
+          </div>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200 text-sm font-medium"
+          data-testid="button-logout"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,15 +1,72 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { storage, hashPassword, comparePasswords } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Call seed on startup
-  // await storage.seedDatabase();
+  // Seed default admin user if no users exist
+  const userCount = await storage.countUsers();
+  if (userCount === 0) {
+    const hash = await hashPassword("admin123");
+    await storage.createUser("admin", hash);
+    console.log("Default admin user created: username=admin password=admin123");
+  }
+
+  // Auth routes
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = z.object({
+        username: z.string().min(1),
+        password: z.string().min(1),
+      }).parse(req.body);
+
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+
+      const valid = await comparePasswords(password, user.passwordHash);
+      if (!valid) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+
+      req.session.userId = user.id;
+      res.json({ id: user.id, username: user.username, role: user.role });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy(() => {
+      res.json({ message: "Logged out" });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    const user = await storage.getUserById(req.session.userId);
+    if (!user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    res.json({ id: user.id, username: user.username, role: user.role });
+  });
 
   app.get(api.employees.list.path, async (req, res) => {
     const data = await storage.getEmployees();

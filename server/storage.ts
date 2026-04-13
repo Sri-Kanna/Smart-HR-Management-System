@@ -1,11 +1,29 @@
 import { db, pool } from "./db";
 import { 
-  employees, attendance, departments, jobRoles, performance, companyEvents, leaves,
+  employees, attendance, departments, jobRoles, performance, companyEvents, leaves, users,
   type InsertEmployee, type UpdateEmployeeRequest, type InsertAttendance, type InsertCompanyEvent, type InsertLeave,
+  type User,
 } from "@shared/schema";
 import { eq, sql } from "drizzle-orm";
 import { AnalyticsReportSchema, EmployeeWithDetailsSchema } from "@shared/routes";
 import { z } from "zod";
+import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import { promisify } from "util";
+
+const scryptAsync = promisify(scrypt);
+
+export async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
+
+export async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
+  const [hashed, salt] = stored.split(".");
+  const hashedBuf = Buffer.from(hashed, "hex");
+  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+  return timingSafeEqual(hashedBuf, suppliedBuf);
+}
 
 type EmployeeWithDetails = z.infer<typeof EmployeeWithDetailsSchema>;
 type AnalyticsReport = z.infer<typeof AnalyticsReportSchema>;
@@ -39,6 +57,11 @@ export interface IStorage {
   updateLeaveStatus(id: number, status: string): Promise<typeof leaves.$inferSelect>;
   deleteLeave(id: number): Promise<void>;
   getPayrollSummary(): Promise<{ departmentName: string; headcount: number; totalMonthlyPayroll: number }[]>;
+
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(username: string, passwordHash: string): Promise<User>;
+  getUserById(id: number): Promise<User | undefined>;
+  countUsers(): Promise<number>;
 
   seedDatabase(): Promise<void>;
 }
@@ -275,6 +298,26 @@ export class DatabaseStorage implements IStorage {
         { empId: emp2.id, score: 9, reviewDate: '2023-06-01', topic: 'Mid-Year Review' }
       ]);
     }
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+
+  async createUser(username: string, passwordHash: string): Promise<User> {
+    const result = await db.insert(users).values({ username, passwordHash }).returning();
+    return result[0];
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async countUsers(): Promise<number> {
+    const result = await db.execute(sql`SELECT COUNT(*) as count FROM users`);
+    return Number((result as any).rows[0].count);
   }
 }
 

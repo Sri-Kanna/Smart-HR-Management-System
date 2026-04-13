@@ -1,7 +1,15 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+
+declare module "express-session" {
+  interface SessionData {
+    userId: number;
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -21,6 +29,15 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const MemStore = MemoryStore(session);
+app.use(session({
+  secret: process.env.SESSION_SECRET || "smarthr-secret-key",
+  resave: false,
+  saveUninitialized: false,
+  store: new MemStore({ checkPeriod: 86400000 }),
+  cookie: { secure: false, maxAge: 86400000 },
+}));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

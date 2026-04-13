@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, date, varchar, numeric } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, date, varchar, numeric, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -56,6 +56,13 @@ export const companyEvents = pgTable("company_events", {
   location: varchar("location", { length: 255 }),
   description: text("description"),
   category: varchar("category", { length: 100 }).notNull().default("General"),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: varchar("role", { length: 50 }).notNull().default("admin"),
 });
 
 export const dependents = pgTable("dependents", {
@@ -122,6 +129,8 @@ export type InsertCompanyEvent = z.infer<typeof insertCompanyEventSchema>;
 
 export type Dependent = typeof dependents.$inferSelect;
 export type InsertDependent = z.infer<typeof insertDependentSchema>;
+
+export type User = typeof users.$inferSelect;
 
 // Request Types
 export type CreateEmployeeRequest = InsertEmployee;
