@@ -132,12 +132,6 @@ export default function Login() {
             </form>
           </Form>
 
-          <div className="mt-6 p-3 bg-muted/50 rounded-xl border border-border/50">
-            <p className="text-xs text-muted-foreground text-center font-medium">Default credentials</p>
-            <p className="text-xs text-center text-foreground mt-1">
-              Username: <span className="font-mono font-semibold">admin</span> &nbsp;|&nbsp; Password: <span className="font-mono font-semibold">admin123</span>
-            </p>
-          </div>
         </div>
       </div>
     </div>
