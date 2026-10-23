@@ -1,0 +1,21 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K5:27:29 PM [express] serving on port 5000
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+5:27:32 PM [express] GET /api/events 304 in 19ms :: []
+5:27:32 PM [express] GET /api/employees 304 in 23ms :: []
+5:27:32 PM [express] GET /api/analytics/report 304 in 29ms :: []
+5:32:32 PM [express] GET /api/events 304 in 13ms :: []
+5:32:32 PM [express] GET /api/employees 200 in 18ms :: []
+5:32:32 PM [express] GET /api/analytics/report 200 in 16ms :: []
+5:32:47 PM [express] GET /api/job-roles 200 in 12ms :: []
+5:32:54 PM [express] GET /api/leaves 200 in 3ms :: []
+5:33:02 PM [express] GET /api/performance 304 in 2ms :: []
+5:33:06 PM [express] GET /api/payroll-summary 200 in 2ms :: [{"departmentName":"Engineering","headcount":0,"totalMonthlyPayroll":0}]
+5:33:15 PM [express] GET /api/departments 200 in 2ms :: [{"id":1,"name":"Engineering"}]
+5:37:16 PM [express] GET /api/employees 304 in 11ms :: []
+5:37:16 PM [express] GET /api/events 304 in 10ms :: []
+5:37:16 PM [express] GET /api/analytics/report 304 in 13ms :: []

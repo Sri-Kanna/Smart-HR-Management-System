@@ -1,0 +1,112 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K5:46:31 PM [express] serving on port 5000
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+5:46:37 PM [express] GET /api/employees 200 in 16ms :: []
+5:46:37 PM [express] GET /api/analytics/report 200 in 22ms :: []
+5:46:49 PM [express] GET /api/employees 304 in 15ms :: []
+5:46:49 PM [express] GET /api/analytics/report 304 in 13ms :: []
+5:46:50 PM [express] GET /api/performance 200 in 2ms :: []
+5:46:50 PM [express] GET /api/job-roles 200 in 2ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:47:38 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/employees.tsx, /src/components/employee-dialog.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:47:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/employees.tsx, /src/components/employee-dialog.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:47:48 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/employees.tsx, /src/components/employee-dialog.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:49:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/dashboard.tsx, /src/index.css[22m
+5:49:41 PM [express] GET /api/events 200 in 9ms
+5:49:42 PM [express] POST /api/events 200 in 4ms
+5:49:44 PM [express] GET /api/events 200 in 4ms

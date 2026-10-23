@@ -1,8 +1,0 @@
-uploads = []
-generated = []
-
-[[outputs]]
-id = "ayzo0BRIC_BgcbrA4bmqo"
-uri = "file://LOCAL_SETUP.md"
-type = "text"
-title = "Smart HR System — Complete Setup Guide"

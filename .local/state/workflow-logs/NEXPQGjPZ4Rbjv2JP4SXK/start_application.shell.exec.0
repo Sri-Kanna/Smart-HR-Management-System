@@ -1,0 +1,82 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K5:49:53 PM [express] serving on port 5000
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+5:50:10 PM [express] GET /api/events 200 in 14ms :: []
+5:50:10 PM [express] GET /api/employees 304 in 23ms :: []
+5:50:10 PM [express] GET /api/analytics/report 304 in 16ms :: []
+5:50:19 PM [express] GET /api/events 200 in 2ms :: []
+5:50:24 PM [express] POST /api/events 201 in 8ms :: {"id":1,"title":"Annual Tech Summit","eventDate":"2026-04-15","location":"Main Hall","description":"Company-wide tech conference","category":"Conference"}
+5:50:53 PM [express] GET /api/job-roles 304 in 10ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+5:51:45 PM [express] GET /api/performance 200 in 10ms :: []
+5:53:22 PM [express] GET /api/events 200 in 13ms :: [{"id":1,"title":"Annual Tech Summit","eventDate":"2026-04-15","location":"Main Hall","description":"Company-wide tech conference","category":"Conference"}]
+5:53:22 PM [express] GET /api/employees 200 in 12ms :: []
+5:53:22 PM [express] GET /api/analytics/report 200 in 11ms :: []
+5:53:29 PM [express] DELETE /api/events/1 204 in 36ms
+5:53:29 PM [express] GET /api/events 200 in 2ms :: []
+5:53:32 PM [express] GET /api/job-roles 200 in 2ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+5:53:35 PM [express] GET /api/performance 200 in 1ms :: []
+5:54:51 PM [express] POST /api/employees 201 in 15ms :: {"id":1,"name":"john","email":"john@gmail.com","dob":"2000-11-20","roleId":2,"skills":["react"]}
+5:54:51 PM [express] GET /api/employees 200 in 2ms :: [{"id":1,"name":"john","email":"john@gmail.com","dob":"2000-11-20","roleId":2,"skills":["react"],"roleTitle":"Software Engineer","departmentName":"Engineering"}]
+5:55:01 PM [express] POST /api/attendance 201 in 4ms :: {"id":1,"empId":1,"date":"2026-03-11","status":"Present"}
+5:55:08 PM [express] GET /api/analytics/report 200 in 3ms :: [{"departmentName":"Engineering","averagePerformanceScore":"0","totalPresentCount":1}]
+5:56:32 PM [express] POST /api/events 201 in 14ms :: {"id":2,"title":"annual tech event","eventDate":"2026-03-18","location":"main conference hall","description":"annual tech event ","category":"Team Building"}
+5:56:32 PM [express] GET /api/events 200 in 2ms :: [{"id":2,"title":"annual tech event","eventDate":"2026-03-18","location":"main conference hall","description":"annual tech event ","category":"Team Building"}]
+Internal Server Error: error: update or delete on table "employees" violates foreign key constraint "attendance_emp_id_employees_id_fk" on table "attendance"
+    at [90m/home/runner/workspace/[39mnode_modules/[4mpg-pool[24m/index.js:45:11
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async DatabaseStorage.deleteEmployee [90m(/home/runner/workspace/[39mserver/storage.ts:99:5[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:67:5[90m)[39m {
+  length: [33m310[39m,
+  severity: [32m'ERROR'[39m,
+  code: [32m'23503'[39m,
+  detail: [32m'Key (id)=(1) is still referenced from table "attendance".'[39m,
+  hint: [90mundefined[39m,
+  position: [90mundefined[39m,
+  internalPosition: [90mundefined[39m,
+  internalQuery: [90mundefined[39m,
+  where: [90mundefined[39m,
+  schema: [32m'public'[39m,
+  table: [32m'attendance'[39m,
+  column: [90mundefined[39m,
+  dataType: [90mundefined[39m,
+  constraint: [32m'attendance_emp_id_employees_id_fk'[39m,
+  file: [32m'ri_triggers.c'[39m,
+  line: [32m'2633'[39m,
+  routine: [32m'ri_ReportViolation'[39m
+}
+5:57:03 PM [express] DELETE /api/employees/1 500 in 15ms :: {"message":"update or delete on table \"employees\" violates foreign key constraint \"attendance_emp_id_employees_id_fk\" on table \"attendance\""}
+5:57:10 PM [express] DELETE /api/events/2 204 in 12ms
+5:57:10 PM [express] GET /api/events 200 in 1ms :: []
+5:57:26 PM [express] GET /api/employees 304 in 12ms :: [{"id":1,"name":"john","email":"john@gmail.com","dob":"2000-11-20","roleId":2,"skills":["react"],"roleTitle":"Software Engineer","departmentName":"Engineering"}]
+5:57:26 PM [express] GET /api/analytics/report 304 in 14ms :: [{"departmentName":"Engineering","averagePerformanceScore":"0","totalPresentCount":1}]
+5:57:26 PM [express] GET /api/events 304 in 12ms :: []
+5:57:29 PM [express] GET /api/job-roles 304 in 2ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+Internal Server Error: error: update or delete on table "employees" violates foreign key constraint "attendance_emp_id_employees_id_fk" on table "attendance"
+    at [90m/home/runner/workspace/[39mnode_modules/[4mpg-pool[24m/index.js:45:11
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async DatabaseStorage.deleteEmployee [90m(/home/runner/workspace/[39mserver/storage.ts:99:5[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:67:5[90m)[39m {
+  length: [33m310[39m,
+  severity: [32m'ERROR'[39m,
+  code: [32m'23503'[39m,
+  detail: [32m'Key (id)=(1) is still referenced from table "attendance".'[39m,
+  hint: [90mundefined[39m,
+  position: [90mundefined[39m,
+  internalPosition: [90mundefined[39m,
+  internalQuery: [90mundefined[39m,
+  where: [90mundefined[39m,
+  schema: [32m'public'[39m,
+  table: [32m'attendance'[39m,
+  column: [90mundefined[39m,
+  dataType: [90mundefined[39m,
+  constraint: [32m'attendance_emp_id_employees_id_fk'[39m,
+  file: [32m'ri_triggers.c'[39m,
+  line: [32m'2633'[39m,
+  routine: [32m'ri_ReportViolation'[39m
+}
+5:57:33 PM [express] DELETE /api/employees/1 500 in 3ms :: {"message":"update or delete on table \"employees\" violates foreign key constraint \"attendance_emp_id_employees_id_fk\" on table \"attendance\""}
+5:57:37 PM [express] GET /api/performance 304 in 10ms :: []

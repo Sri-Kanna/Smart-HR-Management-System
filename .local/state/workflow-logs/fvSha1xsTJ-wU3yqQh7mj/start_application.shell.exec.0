@@ -1,0 +1,19 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K5:22:33 PM [express] serving on port 5000
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+[2m5:22:43 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ new dependencies optimized: [33m@radix-ui/react-tabs[32m[39m
+[2m5:22:43 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ optimized dependencies changed. reloading[39m
+5:22:44 PM [express] GET /api/employees 200 in 20ms :: []
+5:22:44 PM [express] GET /api/events 200 in 19ms :: []
+5:22:44 PM [express] GET /api/analytics/report 200 in 30ms :: []
+5:22:56 PM [express] GET /api/leaves 200 in 11ms :: []
+Internal Server Error: TypeError: result.map is not a function
+    at DatabaseStorage.getPayrollSummary [90m(/home/runner/workspace/[39mserver/storage.ts:241:30[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:252:18[90m)[39m
+5:22:56 PM [express] GET /api/payroll-summary 500 in 80ms :: {"message":"result.map is not a function"}
+5:22:56 PM [express] POST /api/departments 201 in 67ms :: {"id":1,"name":"Engineering"}

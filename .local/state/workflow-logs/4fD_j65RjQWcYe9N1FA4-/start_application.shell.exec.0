@@ -1,0 +1,213 @@
+[1G[0K⠙[1G[0K
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K⠙[1G[0K4:30:40 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+4:30:47 AM [express] GET /api/events 304 in 653ms :: []
+4:30:47 AM [express] GET /api/employees 304 in 649ms :: []
+4:30:47 AM [express] GET /api/analytics/report 304 in 657ms :: []
+4:30:50 AM [express] GET /api/performance 304 in 2ms :: []
+4:30:53 AM [express] GET /api/payroll-summary 200 in 4ms :: [{"departmentName":"Engineering","headcount":0,"totalMonthlyPayroll":0}]
+4:30:55 AM [express] GET /api/job-roles 304 in 2ms :: []
+4:30:55 AM [express] GET /api/leaves 200 in 4ms :: []
+4:31:05 AM [express] GET /api/departments 200 in 2ms :: [{"id":1,"name":"Engineering"}]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:32:44 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/attendance.tsx, /src/pages/dashboard.tsx, /src/pages/employees.tsx, /src/pages/payroll.tsx, /src/pages/performance.tsx, /src/pages/leaves.tsx, /src/components/employee-dialog.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:32:50 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/attendance.tsx, /src/pages/dashboard.tsx, /src/pages/employees.tsx, /src/pages/payroll.tsx, /src/pages/performance.tsx, /src/pages/leaves.tsx, /src/components/employee-dialog.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:32:57 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/attendance.tsx, /src/pages/dashboard.tsx, /src/pages/employees.tsx, /src/pages/payroll.tsx, /src/pages/performance.tsx, /src/pages/leaves.tsx, /src/components/employee-dialog.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:34:31 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+4:34:33 AM [express] GET /api/auth/me 200 in 6ms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:34:54 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/app-sidebar.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:35:14 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+4:35:16 AM [express] GET /api/auth/me 200 in 5ms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:35:20 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m [33m(x2)[39m
+4:35:22 AM [express] GET /api/auth/me 200 in 5ms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:35:27 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/login.tsx, /src/index.css[22m

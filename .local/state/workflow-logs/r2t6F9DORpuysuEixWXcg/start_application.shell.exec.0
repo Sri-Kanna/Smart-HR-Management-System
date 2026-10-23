@@ -1,0 +1,187 @@
+[1G[0K⠙[1G[0K
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K⠙[1G[0K4:59:41 PM [express] serving on port 5000
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+4:59:51 PM [express] GET /api/events 304 in 34ms :: []
+4:59:51 PM [express] GET /api/employees 304 in 31ms :: [{"id":1,"name":"john","email":"john@gmail.com","dob":"2000-11-20","roleId":2,"skills":["react"],"roleTitle":"Software Engineer","departmentName":"Engineering"}]
+4:59:51 PM [express] GET /api/analytics/report 304 in 44ms :: [{"departmentName":"Engineering","averagePerformanceScore":"0","totalPresentCount":1}]
+4:59:56 PM [express] GET /api/performance 304 in 2ms :: []
+4:59:59 PM [express] GET /api/job-roles 304 in 2ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+5:00:14 PM [express] GET /api/employees 304 in 23ms :: [{"id":1,"name":"john","email":"john@gmail.com","dob":"2000-11-20","roleId":2,"skills":["react"],"roleTitle":"Software Engineer","departmentName":"Engineering"}]
+5:00:14 PM [express] GET /api/analytics/report 304 in 20ms :: [{"departmentName":"Engineering","averagePerformanceScore":"0","totalPresentCount":1}]
+5:00:14 PM [express] GET /api/events 304 in 19ms :: []
+5:00:16 PM [express] GET /api/job-roles 304 in 1ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+5:00:26 PM [express] GET /api/performance 304 in 10ms :: []
+5:12:43 PM [express] GET /api/job-roles 304 in 10ms :: [{"id":1,"title":"Recruiter","baseSalary":"60000","deptId":1},{"id":2,"title":"Software Engineer","baseSalary":"120000","deptId":2},{"id":3,"title":"System Architect","baseSalary":"150000","deptId":2},{"id":4,"title":"Team Leader","baseSalary":"130000","deptId":2}]
+5:13:31 PM [express] GET /api/performance 304 in 9ms :: []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:17:38 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/employees.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/dashboard.tsx, /src/components/employee-dialog.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:17:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/employees.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/dashboard.tsx, /src/components/employee-dialog.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:17:47 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/employees.tsx, /src/pages/attendance.tsx, /src/pages/performance.tsx, /src/pages/dashboard.tsx, /src/components/employee-dialog.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:20:44 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/app-sidebar.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:20:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:20:55 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@/pages/payroll" from "client/src/App.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/home/runner/workspace/client/src/App.tsx[39m:16:20
+[33m  29 |  import Departments from "@/pages/departments";
+  30 |  import Leaves from "@/pages/leaves";
+  31 |  import Payroll from "@/pages/payroll";
+     |                       ^
+  32 |  function Router() {
+  33 |    return /* @__PURE__ */ jsxDEV(Switch, { "data-replit-metadata": "client/src/App.tsx:20:4", "data-component-name": "...[39m
+      at TransformPluginContext._formatLog (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:28998:43)
+      at TransformPluginContext.error (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:28995:14)
+      at normalizeUrl (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:27118:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async <anonymous> (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:27176:32)
+      at async Promise.all (index 17)
+      at async TransformPluginContext.transform (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:27144:4)
+      at async EnvironmentPluginContainer.transform (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:28796:14)
+      at async loadAndTransform (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:22669:26)
+      at async viteTransformMiddleware (/home/runner/workspace/node_modules/vite/dist/node/chunks/config.js:24541:20)
+[1G[0K⠙[1G[0K[1mnpm[22m [96mnotice[39m
+[1mnpm[22m [96mnotice[39m New [31mmajor[39m version of npm available! [31m10.8.2[39m -> [34m11.11.1[39m
+[1mnpm[22m [96mnotice[39m Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.11.1[39m
+[1mnpm[22m [96mnotice[39m To update run: [4mnpm install -g npm@11.11.1[24m
+[1mnpm[22m [96mnotice[39m
+[1G[0K⠙[1G[0K
