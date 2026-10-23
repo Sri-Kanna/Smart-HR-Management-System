@@ -1,4 +1,4 @@
-# Smart HR Management System — Complete Beginner's Setup Guide (Sri Kanna)
+# Smart HR Management System — Complete Beginner's Setup Guide 
 
 ---
 
